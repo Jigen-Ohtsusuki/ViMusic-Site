@@ -32,6 +32,11 @@
       font-family: 'Poppins', sans-serif;
       font-weight: 400;
       line-height: 1.6;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    body.sidenav-open {
+        overflow: hidden;
     }
 
     nav {
@@ -39,7 +44,7 @@
       position: fixed;
       width: 100%;
       top: 0;
-      z-index: 10;
+      z-index: 1000;
     }
 
     .nav-container {
@@ -95,6 +100,44 @@
       color: var(--primary-hover);
       background-color: var(--hover-bg);
     }
+    
+    .hamburger {
+        display: none;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        z-index: 1001;
+        padding: 0.5rem;
+    }
+
+    .hamburger span {
+        display: block;
+        width: 25px;
+        height: 3px;
+        margin: 5px auto;
+        background-color: var(--text-color);
+        transition: all 0.3s ease-in-out;
+    }
+    
+    .sidenav-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 998;
+    }
+
+    .sidenav-overlay.active {
+        display: block;
+    }
+    
+    .nav-links .close-btn {
+        display: none;
+    }
+
 
     .btn-primary {
       font-family: 'Poppins', sans-serif;
@@ -280,57 +323,122 @@
 
     @media (max-width: 768px) {
       .nav-container {
-        flex-direction: column;
-        gap: 1rem;
+        flex-direction: row;
+        justify-content: space-between;
+      }
+      
+      .hamburger {
+        display: block;
       }
 
       .nav-links {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 280px;
+        background-color: var(--nav-bg);
         flex-direction: column;
+        align-items: flex-start;
+        padding: 4rem 2rem;
+        gap: 1.5rem;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        z-index: 999;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      }
+      
+      .nav-links.active {
+        transform: translateX(0);
+      }
+      
+      .nav-links .close-btn {
+        display: block;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        font-size: 2.5rem;
+        color: var(--text-color);
+        text-decoration: none;
+      }
+      
+      .split-button {
+        display: flex;
+        flex-direction: row;
         align-items: center;
-        gap: 0.5rem;
+        border: 2px solid var(--primary-color);
+        border-radius: 50px;
+        overflow: hidden;
+        width: -moz-fit-content;
+        width: fit-content;
+        position: relative; /* Corrected from static to relative */
+        gap: 0;
       }
 
-      .split-button {
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
+      .split-button .btn-main, 
+      .split-button .btn-dropdown {
+        border: none;
+        background-color: var(--card-bg);
+        color: var(--text-color);
+        border-radius: 0;
+        margin: 0;
+        padding: 0.5rem 1rem;
+        line-height: 1.5;
+        font-size: 1rem;
       }
 
       .split-button .btn-main {
-        border-radius: 50px;
-        border: 2px solid var(--primary-color);
-        line-height: 1.5;
+        border-right: 1px solid var(--primary-color);
       }
-
-      .split-button .btn-dropdown {
-        border-radius: 50px;
-        border: 2px solid var(--primary-color);
-        margin-top: 0;
-        line-height: 1.5;
-      }
-
+      
       .split-button .dropdown-menu {
         width: 100%;
-        text-align: center;
-      }
-
-      .split-button:hover {
-        transform: none;
+        text-align: left;
+        left: 0;
+        margin-top: 1rem;
       }
 
       .split-button:hover .btn-main,
       .split-button:hover .btn-dropdown {
-        background-color: var(--card-bg);
+        background-color: var(--hover-bg);
         color: var(--primary-hover);
-        transform: scale(1.05);
+        transform: none;
+      }
+      
+      body.dark-mode .nav-links {
+          background-color: var(--nav-bg);
+      }
+      
+      body.dark-mode .nav-links .close-btn {
+          color: var(--text-color);
       }
 
+      body.dark-mode .hamburger span {
+          background-color: var(--text-color);
+      }
+      
+      body.dark-mode .split-button {
+        border-color: var(--primary-color);
+      }
+      body.dark-mode .split-button .btn-main {
+        border-right-color: var(--primary-color);
+      }
+      
       .gallery-container h1 {
         font-size: 2rem;
       }
 
       .gallery-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+      
+      .gallery-card {
+        padding: 0;
+      }
+
+      .gallery-card img {
+        object-fit: contain;
       }
     }
 
@@ -343,26 +451,35 @@
         padding: 0.4rem 0.8rem;
         font-size: 0.875rem;
       }
+      
+      .split-button .btn-main,
+      .split-button .btn-dropdown {
+        font-size: 0.875rem;
+        padding: 0.4rem 0.8rem;
+        line-height: 1.5;
+      }
     }
   </style>
   <script src="dark-mode.js" defer></script>
 </head>
 <body>
+  <div class="sidenav-overlay"></div>
   <nav>
     <div class="nav-container">
-<h1 class="logo">
-  <span class="logo-icon">
-    <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 122.98 126.97">
-      <g transform="translate(38.858078 39.3607) scale(0.3680586, 0.38)">
-        <path d="M75.89,0.01c-3.13,0.14 -7,2.17 -7,4.64l1.16,72.06c-9.91,-10.11 -23.45,-11.88 -35.27,-4.1 -11.82,7.78 -16.48,22.84 -11.12,35.94 5.36,13.1 19.23,20.58 33.12,17.84 13.88,-2.74 23.89,-14.92 23.88,-29.07L80.65,36.94c11.72,6.28 24.81,9.57 38.1,9.57 2.34,0 4.23,-1.9 4.23,-4.23L122.98,16.87c0,-2.34 -1.9,-4.23 -4.23,-4.23 -13.08,0 -25.92,-3.56 -37.14,-10.29L78.6,0.55C77.89,0.12 76.93,-0.04 75.89,0.01ZM32.54,94.08c4.27,-0.08 10.76,3.69 15.83,9.07 7.22,7.65 7.8,14.4 3.38,17.5 -3.88,2.71 -9.57,4.37 -16.79,-3.28 -7.22,-7.65 -8.62,-16.19 -6.37,-20.96 0.74,-1.57 2.15,-2.29 3.95,-2.32z" stroke-width="4.23" fill="#4046bf"/>
-        <path d="M15.11,3.8 L4.29,10.33C-1.54,13.85 -1.35,19.24 4.39,22.9 21.57,33.84 45.12,52.42 61.58,68.17c4.8,4.59 3.09,8.84 -3.5,9.68 -10.93,1.4 -23.74,4.12 -31.1,9.43 -5.3,3.83 -6.24,15.97 -3.53,22.15 3.01,6.88 8.53,12.44 15.39,15.48 6.17,2.74 17.76,2.74 23.93,0 6.86,-3.04 12.38,-8.6 15.4,-15.48 2.71,-6.19 2.54,-14.24 2.09,-16.98C69.9,58.31 51.71,28.16 33.82,6.65 29.47,1.42 20.93,0.28 15.11,3.8ZM32.54,94.08c1.74,-0.03 3.84,0.57 6.06,1.66 6.08,2.98 14.8,11.3 15.83,17.93 0.36,2.32 -0.13,4.3 -1.39,5.79 -0.63,0.74 -1.94,1.65 -2.8,2.11 -1.88,1.02 -4.11,1.64 -6.64,1.19 -5.54,-0.99 -12.16,-8.74 -14.37,-13.99 -2.04,-4.84 -2.07,-9.36 -0.65,-12.37 0,-0 0,-0.01 0.01,-0.01 0.74,-1.57 2.15,-2.28 3.95,-2.31z" stroke-width="7.69" fill="#4046bf"/>
-      </g>
-    </svg>
-  </span>
-  <span class="logo-text"><span class="highlight">Vi</span>Music</span>
-</h1>
+      <h1 class="logo">
+        <span class="logo-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="54" height="54" viewBox="0 0 122.98 126.97">
+            <g transform="translate(38.858078 39.3607) scale(0.3680586, 0.38)">
+              <path d="M75.89,0.01c-3.13,0.14 -7,2.17 -7,4.64l1.16,72.06c-9.91,-10.11 -23.45,-11.88 -35.27,-4.1 -11.82,7.78 -16.48,22.84 -11.12,35.94 5.36,13.1 19.23,20.58 33.12,17.84 13.88,-2.74 23.89,-14.92 23.88,-29.07L80.65,36.94c11.72,6.28 24.81,9.57 38.1,9.57 2.34,0 4.23,-1.9 4.23,-4.23L122.98,16.87c0,-2.34 -1.9,-4.23 -4.23,-4.23 -13.08,0 -25.92,-3.56 -37.14,-10.29L78.6,0.55C77.89,0.12 76.93,-0.04 75.89,0.01ZM32.54,94.08c4.27,-0.08 10.76,3.69 15.83,9.07 7.22,7.65 7.8,14.4 3.38,17.5 -3.88,2.71 -9.57,4.37 -16.79,-3.28 -7.22,-7.65 -8.62,-16.19 -6.37,-20.96 0.74,-1.57 2.15,-2.29 3.95,-2.32z" stroke-width="4.23" fill="#4046bf"/>
+              <path d="M15.11,3.8 L4.29,10.33C-1.54,13.85 -1.35,19.24 4.39,22.9 21.57,33.84 45.12,52.42 61.58,68.17c4.8,4.59 3.09,8.84 -3.5,9.68 -10.93,1.4 -23.74,4.12 -31.1,9.43 -5.3,3.83 -6.24,15.97 -3.53,22.15 3.01,6.88 8.53,12.44 15.39,15.48 6.17,2.74 17.76,2.74 23.93,0 6.86,-3.04 12.38,-8.6 15.4,-15.48 2.71,-6.19 2.54,-14.24 2.09,-16.98C69.9,58.31 51.71,28.16 33.82,6.65 29.47,1.42 20.93,0.28 15.11,3.8ZM32.54,94.08c1.74,-0.03 3.84,0.57 6.06,1.66 6.08,2.98 14.8,11.3 15.83,17.93 0.36,2.32 -0.13,4.3 -1.39,5.79 -0.63,0.74 -1.94,1.65 -2.8,2.11 -1.88,1.02 -4.11,1.64 -6.64,1.19 -5.54,-0.99 -12.16,-8.74 -14.37,-13.99 -2.04,-4.84 -2.07,-9.36 -0.65,-12.37 0,-0 0,-0.01 0.01,-0.01 0.74,-1.57 2.15,-2.28 3.95,-2.31z" stroke-width="7.69" fill="#4046bf"/>
+            </g>
+          </svg>
+        </span>
+        <span class="logo-text"><span class="highlight">Vi</span>Music</span>
+      </h1>
 
       <ul class="nav-links">
+        <li><a href="#" class="close-btn">&times;</a></li>
         <li><a href="index.html">Home</a></li>
         <li><a href="gallery.html">Screenshots</a></li>
         <li class="split-button">
@@ -370,22 +487,20 @@
           <button class="btn-dropdown"><span class="material-symbols-outlined">keyboard_arrow_down</span></button>
           <div class="dropdown-menu">
             <a href="https://github.com/Jigen-Ohtsusuki/ViMusic/releases" class="github-link">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
-        <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 
-        c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 
-        c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 
-        c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 
-        c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 
-        c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 
-        c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 
-        c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"/>
-      </svg>
-      GitHub
-    </a>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                <path d="M15,3C8.373,3,3,8.373,3,15c0,5.623,3.872,10.328,9.092,11.63C12.036,26.468,12,26.28,12,26.047v-2.051 c-0.487,0-1.303,0-1.508,0c-0.821,0-1.551-0.353-1.905-1.009c-0.393-0.729-0.461-1.844-1.435-2.526 c-0.289-0.227-0.069-0.486,0.264-0.451c0.615,0.174,1.125,0.596,1.605,1.222c0.478,0.627,0.703,0.769,1.596,0.769 c0.433,0,1.081-0.025,1.691-0.121c0.328-0.833,0.895-1.6,1.588-1.962c-3.996-0.411-5.903-2.399-5.903-5.098 c0-1.162,0.495-2.286,1.336-3.233C9.053,10.647,8.706,8.73,9.435,8c1.798,0,2.885,1.166,3.146,1.481C13.477,9.174,14.461,9,15.495,9 c1.036,0,2.024,0.174,2.922,0.483C18.675,9.17,19.763,8,21.565,8c0.732,0.731,0.381,2.656,0.102,3.594 c0.836,0.945,1.328,2.066,1.328,3.226c0,2.697-1.904,4.684-5.894,5.097C18.199,20.49,19,22.1,19,23.313v2.734 c0,0.104-0.023,0.179-0.035,0.268C23.641,24.676,27,20.236,27,15C27,8.373,21.627,3,15,3z"/>
+              </svg>
+              GitHub
+            </a>
           </div>
         </li>
         <li><a href="https://github.com/Jigen-Ohtsusuki/ViMusic/issues/new?assignees=&labels=enhancement&template=feature_request.md">Request Feature</a></li>
       </ul>
+      <button class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
     </div>
   </nav>
 
@@ -453,19 +568,71 @@
   </footer>
 
   <script>
+    // Dropdown functionality
     document.querySelectorAll('.split-button .btn-dropdown').forEach(button => {
-      button.addEventListener('click', () => {
-        const dropdownMenu = button.nextElementSibling;
-        dropdownMenu.classList.toggle('show');
+      button.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event from bubbling up to document
+        const dropdownMenu = button.closest('.split-button').querySelector('.dropdown-menu');
+        if (!dropdownMenu) return;
+        
+        const isShown = dropdownMenu.classList.contains('show');
+        // Hide all other dropdowns
+        document.querySelectorAll('.dropdown-menu').forEach(menu => menu.classList.remove('show'));
+        // Toggle the current one
+        if (!isShown) {
+            dropdownMenu.classList.add('show');
+        }
       });
     });
 
+    // SideNav functionality
+    function setupNav() {
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const closeBtn = document.querySelector('.nav-links .close-btn');
+        const overlay = document.querySelector('.sidenav-overlay');
+
+        const openNav = () => {
+            navLinks.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('sidenav-open');
+        };
+
+        const closeNav = () => {
+            navLinks.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('sidenav-open');
+        };
+
+        hamburger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Toggle navigation
+            if (navLinks.classList.contains('active')) {
+                closeNav();
+            } else {
+                openNav();
+            }
+        });
+        
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeNav();
+        });
+
+        overlay.addEventListener('click', closeNav);
+    }
+    
+    // Close dropdown and sidenav when clicking outside
     document.addEventListener('click', (event) => {
       if (!event.target.closest('.split-button')) {
         document.querySelectorAll('.dropdown-menu').forEach(menu => {
           menu.classList.remove('show');
         });
       }
+    });
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      setupNav();
     });
   </script>
 </body>
